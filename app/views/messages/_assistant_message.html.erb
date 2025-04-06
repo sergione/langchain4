@@ -1,0 +1,14 @@
+<div id="message_<%= message_id %>" class="flex items-start">
+  <div class="flex-shrink-0">
+    <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center text-white">
+      AI
+    </div>
+  </div>
+  <div class="ml-3 bg-gray-100 p-3 rounded-lg">
+    <% if result.start_with?('[') || result.start_with?('{') %>
+      <pre class="text-sm text-gray-700 overflow-x-auto"><code><%= result %></code></pre>
+    <% else %>
+      <p class="text-sm text-gray-700"><%= result %></p>
+    <% end %>
+  </div>
+</div> 

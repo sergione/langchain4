@@ -1,8 +1,3 @@
-// Entry point for the build script in your package.json
-import "@hotwired/turbo-rails"
-import "./controllers"
-import "./form_reset"
-
 // Add additional event listener for Turbo Stream form submissions
 document.addEventListener("turbo:submit-start", function(event) {
   const form = event.target;
