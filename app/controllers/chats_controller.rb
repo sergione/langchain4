@@ -72,14 +72,49 @@ class ChatsController < ApplicationController
 
     assistant.add_message_and_run(content: message, auto_tool_execution: true)
 
+    # Debug logging
+    Rails.logger.info "Messages from assistant:"
+    assistant.messages.each_with_index do |msg, idx|
+      Rails.logger.info "Message #{idx}: #{msg.class}"
+      Rails.logger.info "  Content: #{msg.content}"
+      if msg.tool_calls
+        Rails.logger.info "  Tool Calls: #{msg.tool_calls.class} (count: #{msg.tool_calls.size})"
+        msg.tool_calls.each_with_index do |tc, tc_idx|
+          Rails.logger.info "    Tool Call #{tc_idx}: #{tc.class}"
+          Rails.logger.info "    Tool Call inspect: #{tc.inspect}"
+          Rails.logger.info "    Methods: #{tc.methods - Object.methods}" if tc.respond_to?(:methods)
+        end
+      end
+    end
+
     # Get the actual results from the tool execution
     tool_results = nil
     assistant.messages.each do |msg|
       if msg.tool_calls && !msg.tool_calls.empty?
         msg.tool_calls.each do |tool_call|
-          if tool_call.name == "query" && tool_call.response
+          # Check if it's a Hash (direct response) or an object with name/response methods
+          if tool_call.is_a?(Hash) && tool_call["name"] == "query" && tool_call["response"]
+            Rails.logger.info "Found hash tool call with query response"
+            tool_results = tool_call["response"]
+            break
+          elsif tool_call.respond_to?(:name) && tool_call.name == "query" && tool_call.respond_to?(:response)
+            Rails.logger.info "Found object tool call with query response"
             tool_results = tool_call.response
             break
+          elsif tool_call.is_a?(Hash) && tool_call.key?("function")
+            # Handle structured format
+            Rails.logger.info "Found tool call with function key"
+            function = tool_call["function"]
+            if function["name"] == "query" && tool_call["response"]
+              tool_results = tool_call["response"]
+              break
+            end
+          elsif tool_call.respond_to?(:function) && tool_call.function.respond_to?(:name)
+            Rails.logger.info "Found tool call with function method"
+            if tool_call.function.name == "query" && tool_call.respond_to?(:response)
+              tool_results = tool_call.response
+              break
+            end
           end
         end
       end
@@ -87,15 +122,19 @@ class ChatsController < ApplicationController
     end
 
     if tool_results
+      Rails.logger.info "Tool results: #{tool_results.class} - #{tool_results.inspect}"
       if tool_results.is_a?(Array)
         JSON.pretty_generate(tool_results)
       else
         tool_results.inspect
       end
     else
+      Rails.logger.info "No tool results found, returning last message content"
       assistant.messages.last.content
     end
   rescue => e
-    "Error processing query: #{e.message}"
+    Rails.logger.error "Error in process_query: #{e.class} - #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    "Error processing query: #{e.message} (#{e.class})"
   end
 end

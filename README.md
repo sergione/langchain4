@@ -13,14 +13,18 @@ A Rails application that provides a chat interface for querying data using LangC
 
 1. Clone this repository
 2. Install dependencies:
+
    ```
    bundle install
    ```
+
 3. Start the Rails server:
+
    ```
    rails server
    ```
-4. Open your browser to http://localhost:3000
+
+4. Open your browser to <http://localhost:3000>
 
 ## Features
 
@@ -39,6 +43,7 @@ A Rails application that provides a chat interface for querying data using LangC
 ## Architecture
 
 The application uses:
+
 - Rails 8.0.2 as the web framework
 - Hotwire (Turbo) for seamless page updates
 - LangChain Ruby for AI assistant functionality
@@ -48,6 +53,7 @@ The application uses:
 ## Development
 
 The main components of the application are:
+
 - `QueryTool`: Handles data querying functionality
 - `ChatsController`: Manages the chat interface and responses
 - `chat_controller.js`: Stimulus controller for UI interactions
