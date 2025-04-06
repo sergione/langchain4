@@ -38,10 +38,7 @@
                   id: "chat_message",
                   class: "block w-full rounded-md border-0 px-4 py-2.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600",
                   placeholder: "Type your query here...",
-                  data: { 
-                    action: "keydown.enter->chat#submitOnEnter", 
-                    chat_target: "messageInput"
-                  },
+                  data: { action: "keydown.enter->chat#submitOnEnter" },
                   autocomplete: "off"
                 %>
                 <%= form.hidden_field :model, value: "mistral:latest" %>
