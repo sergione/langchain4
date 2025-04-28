@@ -21,7 +21,7 @@ A Rails application that provides a chat interface for querying data using LangC
 3. Start the Rails server:
 
    ```
-   rails server
+   bin/dev
    ```
 
 4. Open your browser to <http://localhost:3000>
